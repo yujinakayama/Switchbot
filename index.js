@@ -1,5 +1,5 @@
 const spawn = require('child_process').spawn;
-const trigger = (triggerCommand, address) => {
+const trigger = (triggerCommand, address, timeout) => {
     const command = {
         turnOn: "570101",
         turnOff: "570102",
@@ -25,7 +25,7 @@ const trigger = (triggerCommand, address) => {
                 setTimeout(() => {
                     gatttool.kill();
                     resolve();
-                }, 1000);
+                }, timeout);
             } else if (data.indexOf("Error") >= 0) {
                 gatttool.kill();
                 reject();
@@ -37,16 +37,16 @@ const trigger = (triggerCommand, address) => {
         });
     });
 }
-module.exports = (address) => {
+module.exports = (address, config = { timeout: 1000 }) => {
   return {
     "turnOn" : () => {
-       return trigger("turnOn", address);
+       return trigger("turnOn", address, config.timeout);
     },
     "turnOff" : () => {
-       return trigger("turnOff", address);
+       return trigger("turnOff", address, config.timeout);
     },
     "press" : () => {
-       return trigger("press", address);
+       return trigger("press", address, config.timeout);
     }
   }
 
